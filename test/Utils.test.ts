@@ -1,8 +1,8 @@
 import { Utils } from "../src/Utils";
 
 describe('Utils', () => {
-    it('should return empty string', function () {
+    it('should return uppercase string', function () {
         const result = Utils.toUpperCase('testString');
-        expect(result).toEqual('');
+        expect(result).toEqual('TESTSTRING');
     });
 })
