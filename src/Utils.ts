@@ -1,5 +1,5 @@
 export class Utils {
     public static toUpperCase(arg: string): string {
-        return ''
+        return arg.toUpperCase();
     }
 }
