@@ -26,6 +26,6 @@ describe('Utils', () => {
     });
 
     it('should throw error on empty url', function () {
-        expect(() => Utils.parseUrl('')).toThrowError()
+        expect(() => Utils.parseUrl('')).toThrowError('Empty URL')
     });
 })
