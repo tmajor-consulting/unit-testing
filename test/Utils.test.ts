@@ -24,4 +24,8 @@ describe('Utils', () => {
 
         expect(parsedUrl.query).toEqual(expectedQuery);
     });
+
+    it('should throw error on empty url', function () {
+        expect(() => Utils.parseUrl('')).toThrowError()
+    });
 })
