@@ -1,4 +1,4 @@
-import { Utils } from "../src/Utils";
+import { Utils } from "../../src/Utils/Utils";
 
 describe('Utils', () => {
     it('should return uppercase string', function () {
