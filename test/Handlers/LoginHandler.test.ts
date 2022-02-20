@@ -48,7 +48,7 @@ describe('LoginHandler', () => {
             expect(responseMock.writeHead).not.toHaveBeenCalled();
         });
 
-        it.only('should respond with token on valid POST request', async () => {
+        it('should respond with token on valid POST request', async () => {
             requestMock.method = HTTP_METHODS.POST;
 
             getRequestBodyMock.mockReturnValueOnce({
@@ -71,7 +71,33 @@ describe('LoginHandler', () => {
             expect(responseMock.statusCode).toEqual(HTTP_CODES.CREATED);
             expect(responseMock.writeHead).toHaveBeenCalledWith(HTTP_CODES.CREATED, { 'Content-Type': 'application/json' });
             expect(responseMock.write).toHaveBeenCalledWith(JSON.stringify(mockSessionToken));
+        });
 
+        it('should respond with NOT_FOUND if there is no token', async () => {
+            requestMock.method = HTTP_METHODS.POST;
+
+            getRequestBodyMock.mockReturnValueOnce({
+                username: 'mockedUsername',
+                password: 'mockedPassword'
+            });
+
+            authorizerMock.generateToken.mockReturnValueOnce(null)
+
+            await loginHandler.handleRequest();
+
+            expect(responseMock.statusCode).toEqual(HTTP_CODES.NOT_fOUND);
+            expect(responseMock.write).toHaveBeenCalledWith('wrong username or password');
+        });
+
+        it('should respond with INTERNAL_SERVER_ERROR in case of error', async () => {
+            requestMock.method = HTTP_METHODS.POST;
+
+            const errorMessage = 'Oups, something went wrong!'
+            getRequestBodyMock.mockRejectedValueOnce(new Error(errorMessage))
+            await loginHandler.handleRequest();
+
+            expect(responseMock.statusCode).toEqual(HTTP_CODES.INTERNAL_SERVER_ERROR);
+            expect(responseMock.write).toHaveBeenCalledWith('Internal error: ' + errorMessage);
         });
     })
 })
