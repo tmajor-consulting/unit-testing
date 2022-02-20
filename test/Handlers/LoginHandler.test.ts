@@ -22,6 +22,10 @@ describe('LoginHandler', () => {
             )
         });
 
+        afterEach(() => {
+            jest.clearAllMocks();
+        })
+
         it('should respond with OK for OPTIONS call', async() => {
             requestMock.method = HTTP_METHODS.OPTIONS;
             await loginHandler.handleRequest();
