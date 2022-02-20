@@ -1,5 +1,6 @@
 import {LoginHandler} from "../../src/Handlers/LoginHandler";
 import {HTTP_CODES, HTTP_METHODS} from "../../src/Domain/Server";
+import {Utils} from "../../src/Utils/Utils";
 
 describe('LoginHandler', () => {
 
@@ -14,12 +15,15 @@ describe('LoginHandler', () => {
         };
         const authorizerMock = {};
 
+        const getRequestBodyMock = jest.fn();
+
         beforeEach(() => {
             loginHandler = new LoginHandler(
                 requestMock as any, // DO NOT USE THIS OUTSIDE OF TESTS
                 responseMock as any,
                 authorizerMock as any
             )
+            Utils.getRequestBody = getRequestBodyMock;
         });
 
         afterEach(() => {
@@ -38,6 +42,17 @@ describe('LoginHandler', () => {
             await loginHandler.handleRequest();
 
             expect(responseMock.writeHead).not.toHaveBeenCalled();
+        });
+
+        it.only('should respond with token on valid POST request', async () => {
+            requestMock.method = HTTP_METHODS.POST;
+
+            getRequestBodyMock.mockReturnValueOnce({
+                username: 'mockedUsername',
+                password: 'mockedPassword'
+            })
+            await loginHandler.handleRequest();
+
         });
     })
 })
