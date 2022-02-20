@@ -1,5 +1,5 @@
 import {LoginHandler} from "../../src/Handlers/LoginHandler";
-import {HTTP_CODES, HTTP_METHODS} from "../../src/Domain/Server";
+import {HTTP_CODES, HTTP_METHODS, SessionToken} from "../../src/Domain/Server";
 import {Utils} from "../../src/Utils/Utils";
 
 describe('LoginHandler', () => {
@@ -11,9 +11,13 @@ describe('LoginHandler', () => {
             method: ''
         };
         const responseMock = {
-            writeHead: jest.fn()
+            writeHead: jest.fn(),
+            write: jest.fn(),
+            statusCode: 0
         };
-        const authorizerMock = {};
+        const authorizerMock = {
+            generateToken: jest.fn()
+        };
 
         const getRequestBodyMock = jest.fn();
 
@@ -50,8 +54,23 @@ describe('LoginHandler', () => {
             getRequestBodyMock.mockReturnValueOnce({
                 username: 'mockedUsername',
                 password: 'mockedPassword'
-            })
+            });
+
+            const mockSessionToken: SessionToken = {
+                accessRights: [1,2],
+                expirationTime: new Date(),
+                tokenId: 'mockedTokenId',
+                userName: 'mockedUserName',
+                valid: true
+            }
+
+            authorizerMock.generateToken.mockReturnValueOnce(mockSessionToken)
+
             await loginHandler.handleRequest();
+
+            expect(responseMock.statusCode).toEqual(HTTP_CODES.CREATED);
+            expect(responseMock.writeHead).toHaveBeenCalledWith(HTTP_CODES.CREATED, { 'Content-Type': 'application/json' });
+            expect(responseMock.write).toHaveBeenCalledWith(JSON.stringify(mockSessionToken));
 
         });
     })
