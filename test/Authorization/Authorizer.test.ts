@@ -1,6 +1,7 @@
 import {Authorizer} from "../../src/Authorization/Authorizer";
 import { SessionTokenDBAccess } from '../../src/Authorization/SessionTokenDBAccess';
 import { UserCredentialsDbAccess } from '../../src/Authorization/UserCredentialsDbAccess';
+import {Account, SessionToken} from "../../src/Domain/Server";
 
 jest.mock('../../src/Authorization/SessionTokenDBAccess');
 jest.mock('../../src/Authorization/UserCredentialsDbAccess');
@@ -14,4 +15,49 @@ describe('Authorizer', () => {
         expect(SessionTokenDBAccess).toHaveBeenCalled();
         expect(UserCredentialsDbAccess).toHaveBeenCalled();
     });
+
+
+    describe('generateToken', () => {
+        const sessionTokenDBAccessMock = {
+            storeSessionToken: jest.fn(),
+        };
+        const userCredentialsDBAccessMock = {
+            getUserCredential: jest.fn(),
+        };
+
+        beforeEach(() => {
+            authorizer = new Authorizer(
+                sessionTokenDBAccessMock as any,
+                userCredentialsDBAccessMock as any
+            )
+        })
+
+        afterEach(() => {
+            jest.clearAllMocks();
+        })
+
+        it('should return a sessionToken for valid credentials', async () => {
+            userCredentialsDBAccessMock.getUserCredential.mockReturnValueOnce({
+                username: 'mockedUserName',
+                accessRights: [1,2]
+            })
+
+            const mockedAccount: Account = {
+                username: 'mockedUserName',
+                password: 'mockedPassword'
+            }
+
+            const expectedSessionToken: SessionToken = {
+                accessRights: [1,2 ],
+                expirationTime: new Date(),
+                userName: 'mockedUserName',
+                valid: true,
+                tokenId: ''
+            }
+
+            const sessionToken = await authorizer.generateToken(mockedAccount);
+
+            expect(sessionToken).toEqual(expectedSessionToken)
+        });
+    })
 })
