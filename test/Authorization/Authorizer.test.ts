@@ -48,16 +48,20 @@ describe('Authorizer', () => {
             }
 
             const expectedSessionToken: SessionToken = {
-                accessRights: [1,2 ],
-                expirationTime: new Date(),
+                accessRights: [1, 2],
+                expirationTime: new Date(60 * 60 * 1000),
                 userName: 'mockedUserName',
                 valid: true,
                 tokenId: ''
             }
 
+            jest.spyOn(global.Math, 'random').mockReturnValueOnce(0);
+            jest.spyOn(global.Date, 'now').mockReturnValueOnce(0)
+
             const sessionToken = await authorizer.generateToken(mockedAccount);
 
-            expect(sessionToken).toEqual(expectedSessionToken)
+            expect(sessionToken).toEqual(expectedSessionToken);
+            expect(sessionTokenDBAccessMock.storeSessionToken).toHaveBeenCalledWith(sessionToken)
         });
     })
 })
