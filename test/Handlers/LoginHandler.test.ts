@@ -28,5 +28,12 @@ describe('LoginHandler', () => {
             expect(responseMock.writeHead).toHaveBeenCalledTimes(1);
             expect(responseMock.writeHead).toHaveBeenCalledWith(HTTP_CODES.OK);
         });
+
+        it('should break on not handled http methods', async () => {
+            requestMock.method = 'randomMethod';
+            await loginHandler.handleRequest();
+
+            expect(responseMock.writeHead).not.toHaveBeenCalled();
+        });
     })
 })
