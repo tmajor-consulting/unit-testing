@@ -38,11 +38,22 @@ describe('Utils', () => {
     describe('getRequestBasePath', () => {
         it('should return base path for a valid request',  () => {
             const url = 'http://localhost:8080/login';
+            
+            const request = { url } as IncomingMessage; // stub
 
-            const result = Utils.getRequestBasePath(url);
+            const result = Utils.getRequestBasePath(request)
 
             expect(result).toEqual('login');
         });
 
+        it('should return an empty string for request with no path',  () => {
+            const url = 'http://localhost:8080/';
+
+            const request = { url } as IncomingMessage; // stub
+
+            const result = Utils.getRequestBasePath(request)
+
+            expect(result).toEqual('');
+        });
     })
 })
