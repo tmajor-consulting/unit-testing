@@ -1,22 +1,17 @@
 import { SessionTokenDBAccess } from '../../src/Authorization/SessionTokenDBAccess';
 import * as Nedb from 'nedb';
-import Mock = jest.Mock;
-import {SessionToken} from "../../src/Domain/Server";
+import { SessionToken } from '../../src/Domain/Server';
+import { mock } from 'jest-mock-extended';
 
-jest.mock('nedb');
+let nedbMock = mock<Nedb>();
+
 
 
 describe('SessionTokenDBAccess', () => {
     let sessionTokenDBAccess: SessionTokenDBAccess;
 
-    const nedbMock = {
-        loadDatabase: jest.fn(),
-        insert: jest.fn(),
-        find: jest.fn(),
-    };
-
     beforeEach(() => {
-        sessionTokenDBAccess = new SessionTokenDBAccess(nedbMock as any);
+        sessionTokenDBAccess = new SessionTokenDBAccess(nedbMock);
 
         expect(nedbMock.loadDatabase).toHaveBeenCalledTimes(1)
     });
