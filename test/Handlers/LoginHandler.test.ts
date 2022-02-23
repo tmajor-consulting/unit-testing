@@ -1,31 +1,26 @@
-import {LoginHandler} from "../../src/Handlers/LoginHandler";
-import {HTTP_CODES, HTTP_METHODS, SessionToken} from "../../src/Domain/Server";
-import {Utils} from "../../src/Utils/Utils";
+import { LoginHandler } from '../../src/Handlers/LoginHandler';
+import { HTTP_CODES, HTTP_METHODS, SessionToken } from '../../src/Domain/Server';
+import { Utils } from '../../src/Utils/Utils';
+import { ServerResponse, IncomingMessage } from 'http';
+import { Authorizer } from '../../src/Authorization/Authorizer';
+import { mock } from 'jest-mock-extended';
+
+let requestMock = mock<IncomingMessage>();
+let responseMock = mock<ServerResponse>();
+let authorizerMock = mock<Authorizer>();
 
 describe('LoginHandler', () => {
 
     describe('handleRequest', () => {
         let loginHandler: LoginHandler;
 
-        const requestMock = {
-            method: ''
-        };
-        const responseMock = {
-            writeHead: jest.fn(),
-            write: jest.fn(),
-            statusCode: 0
-        };
-        const authorizerMock = {
-            generateToken: jest.fn()
-        };
-
         const getRequestBodyMock = jest.fn();
 
         beforeEach(() => {
             loginHandler = new LoginHandler(
-                requestMock as any, // DO NOT USE THIS OUTSIDE OF TESTS
-                responseMock as any,
-                authorizerMock as any
+                requestMock,
+                responseMock,
+                authorizerMock
             )
             Utils.getRequestBody = getRequestBodyMock;
         });
@@ -64,7 +59,7 @@ describe('LoginHandler', () => {
                 valid: true
             }
 
-            authorizerMock.generateToken.mockReturnValueOnce(mockSessionToken)
+            authorizerMock.generateToken.mockResolvedValueOnce(mockSessionToken)
 
             await loginHandler.handleRequest();
 
