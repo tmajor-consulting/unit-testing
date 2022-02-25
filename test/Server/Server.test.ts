@@ -26,7 +26,7 @@ jest.mock('http', () => ({
 }))
 
 describe('Server', () => {
-    it('should create server on port 1337', function () {
+    it('should create server on port 8080', function () {
         new Server().startServer();
 
         expect(listenMock.listen).toHaveBeenCalledWith(8080);
